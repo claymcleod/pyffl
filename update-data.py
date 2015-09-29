@@ -24,6 +24,10 @@ def parse_game(game, year, week):
 			'year': year,
 			'home': game.home,
 			'away': game.away,
+            'position': p.player.position if p.player != None else "",
+            'team': p.team,
+            'own_score': game.score_home if p.team == game.home else game.score_away,
+            'opp_score': game.score_away if p.team == game.home else game.score_home,
 			'name': p.name
 		}
 
@@ -53,7 +57,7 @@ for entry in entries:
 			entry[field] = ""
 
 import csv
-keys = ["week", "year", "home", "away", "name"] + list(allFields)
+keys = ["week", "year", "home", "away", "position", "team", "own_score", "opp_score", "name"] + list(allFields)
 with open('./data/players.csv', 'wb') as player_file:
     dict_writer = csv.DictWriter(player_file, keys)
     dict_writer.writeheader()

@@ -1,9 +1,10 @@
-default:
+default: clean update-data
 	@echo "[+] Running analysis..."
-	@python ./main.py
+	@cd ~/examples & ipython notebook
 
-update-data: clean
+update-data:
 	@echo "[+] Updating data files..."
+	@echo "    - This may take a while on your first run..."
 	@python ./update-data.py  -y 2013 2014 2015
 
 clean:
