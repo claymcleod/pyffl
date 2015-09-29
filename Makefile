@@ -1,4 +1,4 @@
-default: update-data clean
+default:
 	@echo "[+] Running analysis..."
 	@python ./main.py
 
