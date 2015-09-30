@@ -1,6 +1,6 @@
-default: clean update-data
+default:
 	@echo "[+] Running analysis..."
-	@cd ~/examples & ipython notebook
+	@cd ./examples/ & ipython notebook
 
 update-data:
 	@echo "[+] Updating data files..."

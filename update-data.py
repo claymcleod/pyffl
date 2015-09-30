@@ -35,6 +35,20 @@ def parse_game(game, year, week):
 			allFields.add(field)
 			entry[field] = stat
 
+
+		own_team_stats = game.stats_home._asdict() if p.team == game.home else game.stats_away._asdict()
+		opp_team_stats = game.stats_away._asdict() if p.team == game.home else game.stats_home._asdict()
+
+		for key in own_team_stats:
+			modified_key = 'own_team_' + key
+			allFields.add(modified_key)
+			entry[modified_key] = own_team_stats[key]
+
+		for key in opp_team_stats:
+			modified_key = 'opp_team_' + key
+			allFields.add(modified_key)
+			entry[modified_key] = opp_team_stats[key]
+
 		entries.append(entry)
 
 for scheduled_game in nflgame.sched.games.values():
