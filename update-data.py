@@ -28,8 +28,11 @@ def parse_game(game, year, week):
             'team': p.team,
             'own_score': game.score_home if p.team == game.home else game.score_away,
             'opp_score': game.score_away if p.team == game.home else game.score_home,
+			'is_home': 1 if game.home ==  p.team else 0,
 			'name': p.name
 		}
+
+		entry["score_diff"] = entry["own_score"] - entry["opp_score"]
 
 		for field, stat in p.stats.iteritems():
 			allFields.add(field)
@@ -71,7 +74,7 @@ for entry in entries:
 			entry[field] = ""
 
 import csv
-keys = ["week", "year", "home", "away", "position", "team", "own_score", "opp_score", "name"] + list(allFields)
+keys = ["week", "year", "home", "away", "position", "team", "own_score", "opp_score", "is_home", "name", "score_diff"] + list(allFields)
 with open('./data/players.csv', 'wb') as player_file:
     dict_writer = csv.DictWriter(player_file, keys)
     dict_writer.writeheader()
