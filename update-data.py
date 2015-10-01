@@ -2,6 +2,7 @@ from datetime import date
 import nflgame
 import argparse
 from collections import defaultdict
+from transformers import ESPNTransformer
 
 parser = argparse.ArgumentParser(description='Update player data')
 parser.add_argument("-y", "--years", default=[2015], type=int, nargs='+',
@@ -33,12 +34,13 @@ def parse_game(game, year, week):
 		}
 
 		entry["score_diff"] = entry["own_score"] - entry["opp_score"]
+		entry["playing_against"] = "%s%i" % (entry["home"] if entry["is_home"] == 0 else entry["away"], entry["year"])
 
 		for field, stat in p.stats.iteritems():
 			allFields.add(field)
 			entry[field] = stat
 
-
+		entry["std_score"] = ESPNTransformer.transform_standard_points(entry)
 		own_team_stats = game.stats_home._asdict() if p.team == game.home else game.stats_away._asdict()
 		opp_team_stats = game.stats_away._asdict() if p.team == game.home else game.stats_home._asdict()
 
@@ -74,7 +76,7 @@ for entry in entries:
 			entry[field] = ""
 
 import csv
-keys = ["week", "year", "home", "away", "position", "team", "own_score", "opp_score", "is_home", "name", "score_diff"] + list(allFields)
+keys = ["week", "year", "home", "away", "position", "team", "own_score", "opp_score", "is_home", "name", "score_diff"] + list(allFields) + ['std_score', 'playing_against']
 with open('./data/players.csv', 'wb') as player_file:
     dict_writer = csv.DictWriter(player_file, keys)
     dict_writer.writeheader()
