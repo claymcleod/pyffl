@@ -1,6 +1,4 @@
-from scoringtransformer import ScoringTransformer
-
-class ESPNTransformer(ScoringTransformer):
+class ESPNUtility(object):
 
     @staticmethod
     def transform_standard_points(row):

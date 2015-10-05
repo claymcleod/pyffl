@@ -15,46 +15,46 @@ games_to_search = defaultdict(set)
 allFields = set([])
 entries = []
 
-def parse_game(game, year, week):
-	if game == None:
-		return None
-
-	for p in game.players:
-		entry = {
-			'week': week,
-			'year': year,
-			'home': game.home,
-			'away': game.away,
-            'position': p.player.position if p.player != None else "",
-            'team': p.team,
-            'own_score': game.score_home if p.team == game.home else game.score_away,
-            'opp_score': game.score_away if p.team == game.home else game.score_home,
-			'is_home': 1 if game.home ==  p.team else 0,
-			'name': p.name
-		}
-
-		entry["score_diff"] = entry["own_score"] - entry["opp_score"]
-		entry["playing_against"] = "%s%i" % (entry["home"] if entry["is_home"] == 0 else entry["away"], entry["year"])
-
-		for field, stat in p.stats.iteritems():
-			allFields.add(field)
-			entry[field] = stat
-
-		entry["std_score"] = ESPNTransformer.transform_standard_points(entry)
-		own_team_stats = game.stats_home._asdict() if p.team == game.home else game.stats_away._asdict()
-		opp_team_stats = game.stats_away._asdict() if p.team == game.home else game.stats_home._asdict()
-
-		for key in own_team_stats:
-			modified_key = 'own_team_' + key
-			allFields.add(modified_key)
-			entry[modified_key] = own_team_stats[key]
-
-		for key in opp_team_stats:
-			modified_key = 'opp_team_' + key
-			allFields.add(modified_key)
-			entry[modified_key] = opp_team_stats[key]
-
-		entries.append(entry)
+# def parse_game(game, year, week):
+# 	if game == None:
+# 		return None
+#
+# 	for p in game.players:
+# 		entry = {
+# 			'week': week,
+# 			'year': year,
+# 			'home': game.home,
+# 			'away': game.away,
+#             'position': p.player.position if p.player != None else "",
+#             'team': p.team,
+#             'own_score': game.score_home if p.team == game.home else game.score_away,
+#             'opp_score': game.score_away if p.team == game.home else game.score_home,
+# 			'is_home': 1 if game.home ==  p.team else 0,
+# 			'name': p.name
+# 		}
+#
+# 		entry["score_diff"] = entry["own_score"] - entry["opp_score"]
+# 		entry["playing_against"] = "%s%i" % (entry["home"] if entry["is_home"] == 0 else entry["away"], entry["year"])
+#
+# 		for field, stat in p.stats.iteritems():
+# 			allFields.add(field)
+# 			entry[field] = stat
+#
+# 		entry["std_score"] = ESPNTransformer.transform_standard_points(entry)
+# 		own_team_stats = game.stats_home._asdict() if p.team == game.home else game.stats_away._asdict()
+# 		opp_team_stats = game.stats_away._asdict() if p.team == game.home else game.stats_home._asdict()
+#
+# 		for key in own_team_stats:
+# 			modified_key = 'own_team_' + key
+# 			allFields.add(modified_key)
+# 			entry[modified_key] = own_team_stats[key]
+#
+# 		for key in opp_team_stats:
+# 			modified_key = 'opp_team_' + key
+# 			allFields.add(modified_key)
+# 			entry[modified_key] = opp_team_stats[key]
+#
+# 		entries.append(entry)
 
 for scheduled_game in nflgame.sched.games.values():
 	if scheduled_game["year"] not in args.years or scheduled_game["season_type"] != "REG":
