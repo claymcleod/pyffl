@@ -6,7 +6,6 @@ import argparse
 from datetime import date
 from collections import defaultdict
 from transformers import *
-from utility import DynamicClassLoader
 
 parser = argparse.ArgumentParser(description='Update player data')
 parser.add_argument('transformer', metavar='T', type=str,

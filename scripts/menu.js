@@ -55,10 +55,15 @@ inquirer.prompt([
       width: 20
     });
 
-    var update_data_file = path.join(__dirname, "update-data.py");
+    var update_data_file = path.join(__dirname, "run-transformer.py");
     for (var i = 0; i < answers.transformers.length; i++) {
       exec('python '+update_data_file+' '+answers.transformers[i], function (error, stdout, stderr){
         bar.tick();
+				if (stdout)
+					console.log(stdout)
+
+				if (stderr)
+					console.log(stderr.red)
       });
     }
   }
