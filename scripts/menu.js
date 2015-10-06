@@ -34,9 +34,12 @@ var transformers = [
 		checked: true
   },
   {
-		'name': 'StandardPlayerTransfomer',
+		'name': 'StandardPlayerTransformer',
 		checked: false
-  }
+  },
+	{
+		'name': 'PlayerVectorizerTransformer'
+	}
 ]
 
 console.log()

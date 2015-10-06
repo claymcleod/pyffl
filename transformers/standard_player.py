@@ -2,7 +2,7 @@ from transformer import Transformer
 import pandas as pd
 
 rows = []
-class StandardPlayerTransfomer(Transformer):
+class StandardPlayerTransformer(Transformer):
 
     @staticmethod
     def setup():
