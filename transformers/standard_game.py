@@ -2,6 +2,7 @@ import urllib2
 from bs4 import BeautifulSoup
 import os.path
 import pandas as pd
+from utility.nflweather import NFLWeather
 
 from transformer import Transformer
 rows = []
@@ -19,7 +20,9 @@ class StandardGameTransformer(Transformer):
             "home": game.home,
             "away": game.away,
             "week": week,
-            "year": year
+            "year": year,
+            "home_score": game.score_home,
+            "away_score": game.score_away
         }
 
         _url = 'http://www.nflweather.com/week/%i/week-%i/' % (year, week)
@@ -31,23 +34,50 @@ class StandardGameTransformer(Transformer):
                 page_url = 'http://www.nflweather.com%s' % a["href"]
                 page_html = urllib2.urlopen(page_url).read()
                 page_soup = BeautifulSoup(page_html, "lxml")
+                home_team = page_soup.find('div', {'class': 'g-home'}).find('a')['href']
+                home_abbr = "%s-%i-%i" % (NFLWeather.link_to_name(home_team), year, week)
+                the_dict = {}
                 for div in page_soup.findAll('div', {'class': 'span5'}):
                     for p in div.findAll('p'):
                         t = p.text
                         if ':' in t:
-                            key, value = t.split(':')
-                            print key, value
+                            key, value = map(lambda x: x.strip(), t.split(':'))
+                            the_dict[key] = StandardGameTransformer.parse_key_value(key, value)
+
+                weather_map[home_abbr] = the_dict
 
         #f = urllib.urlopen()
         #print f
 
         for key, value in game.stats_home._asdict().iteritems():
-            d["home_"+key] = value
+            d["home_"+key] = StandardGameTransformer.parse_key_value(key, value)
 
         for key, value in game.stats_away._asdict().iteritems():
-            d["away_"+key] = value
+            d["away_"+key] = StandardGameTransformer.parse_key_value(key, value)
+
+        current_abbr = "%s-%i-%i" % (game.home, year, week)
+        if current_abbr in weather_map:
+            for k, v in weather_map[current_abbr].iteritems():
+                d[k] = v
 
         rows.append(d)
+
+    @staticmethod
+    def parse_key_value(key, value):
+        if key == 'Barometer':
+            return int(value.replace("\"",""))
+        elif key == 'Cloud Cover' or key == 'Humidity' or key == 'Precipitation Prob.':
+            return int(value.replace("%", ""))
+        elif key == 'Dew Point' or key == 'Feels like' or key == 'Temperature':
+            if '/' in value:
+                value = value.split('/')[0]
+            return int(value.replace("f.",""))
+        elif key == 'Visibility':
+            return int(value.replace("mi", ""))
+        elif key == 'pos_time':
+            values = str(value).split(":")
+            return int(values[1]) + 60*int(values[0])
+        return value
 
     @classmethod
     def finish(cls):
