@@ -1,3 +1,3 @@
 # Usage
 
-```make install && make```
+```make install && clear && make```
