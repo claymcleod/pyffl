@@ -3,7 +3,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import nflgame
 import argparse
-from datetime import date
+from datetime import date, timedelta
 from collections import defaultdict
 from transformers import *
 
@@ -17,7 +17,7 @@ args = parser.parse_args()
 games_to_search = defaultdict(set)
 future_games = []
 transformer = globals()[args.transformer]()
-today = date.today()
+today = date.today() - timedelta(7)
 
 transformer.setup()
 future = False

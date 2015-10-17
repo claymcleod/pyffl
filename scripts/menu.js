@@ -51,7 +51,7 @@ inquirer.prompt([
 		type: "list",
 		message: "What would you like to do?",
 		name: "action",
-		choices: ["Generate Dataset", "Classify"]
+		choices: ["Generate Dataset"]
   },
 	{
 		type: "checkbox",

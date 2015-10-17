@@ -5,13 +5,14 @@ import gzip
 import os
 from sklearn.cross_validation import train_test_split
 from sklearn.feature_extraction import DictVectorizer
+from sklearn.decomposition import PCA
 import cPickle
 
 rows = []
 all_players = []
 all_games = []
 dv = DictVectorizer()
-
+pca = PCA(n_components=22)
 features = []
 labels_home = []
 labels_away = []
@@ -45,7 +46,7 @@ class PlayerVectorizerTransformer(Transformer):
 
     @staticmethod
     def parse_future_game(home, away, week, year):
-        if week == 5:
+        if week == 4:
             future_games.append((home, away, week, year))
 
     @classmethod
@@ -68,6 +69,8 @@ class PlayerVectorizerTransformer(Transformer):
             labels_home.append(g.score_home)
             labels_away.append(g.score_away)
 
+        pca.fit(features)
+
         for (home, away, week, year) in future_games:
             rows = dv.transform(last_known_players[home] + last_known_players[away])
             result_array = None
@@ -80,16 +83,17 @@ class PlayerVectorizerTransformer(Transformer):
 
             futures_home.append({
                 'name': home,
-                'features': result_array.toarray()[0]
+                'features': pca.transform(result_array.toarray()[0])
             })
 
             futures_away.append({
                 'name': away,
-                'features': result_array.toarray()[0]
+                'features': pca.transform(result_array.toarray()[0])
             })
 
-        train_home = (np.array(features), np.array(labels_home,))
-        train_away = (np.array(features), np.array(labels_away,))
+
+        train_home = (np.array(pca.transform(features)), np.array(labels_home,))
+        train_away = (np.array(pca.transform(features)), np.array(labels_away,))
 
         dir_name = os.path.dirname(Transformer.get_pickle_filename(cls.__name__))
         train_home_name = os.path.join(dir_name, "train_home.pickle.gz")
